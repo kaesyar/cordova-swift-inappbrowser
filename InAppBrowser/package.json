@@ -1,0 +1,18 @@
+{
+  "name": "cordova-swift-plugin-inappbrowser",
+  "version": "1.0.0",
+  "description": "Cordova Swift InAppBrowser Plugin",
+  "cordova": {
+    "id": "cordova-swift-plugin-inappbrowser",
+    "platforms": ["ios"]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "mobile",
+    "ios",
+    "nostr",
+    "inappbrowser"
+  ],
+  "author": "Shakhzod Omonboyev",
+  "license": "MIT"
+}
