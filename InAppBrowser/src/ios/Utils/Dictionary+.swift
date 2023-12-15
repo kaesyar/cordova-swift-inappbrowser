@@ -17,3 +17,20 @@ extension Dictionary {
         }
     }
 }
+
+extension String {
+    var optionsDictionary: [String: String]? {
+        let dict = self
+            .components(separatedBy: ",")
+            .compactMap { option -> (key: String, value: String)? in
+                let keyValue = option.components(separatedBy: "=")
+                if keyValue.count != 2 { return nil }
+                return (key: keyValue[0], value: keyValue[1])
+            }
+            .reduce(into: [String:String]()) { dictionary, option in
+                dictionary[option.key] = option.value
+            }
+        
+        return dict.isEmpty ? nil : dict
+    }
+}

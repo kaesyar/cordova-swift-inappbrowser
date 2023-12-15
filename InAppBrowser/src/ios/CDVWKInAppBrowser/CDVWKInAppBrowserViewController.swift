@@ -261,7 +261,7 @@ extension CDVWKInAppBrowserViewController {
     
     func setupWebView() {
         var webViewBounds = view.bounds
-        webViewBounds.size.height -= browserOptions.bottomOffset
+        webViewBounds.size.height -= CGFloat(browserOptions.bottomOffset)
 //        browserOptions.location ? BrowserConstants.FOOTER_HEIGHT : BrowserConstants.TOOLBAR_HEIGHT
         
         webView = WKWebView(frame: webViewBounds, configuration: configuration)

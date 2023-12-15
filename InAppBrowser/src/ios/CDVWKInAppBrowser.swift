@@ -2,7 +2,7 @@
 final class CDVWKInAppBrowser: CDVPlugin {
     var tmpWindow: UIWindow?
     
-//    private var beforeLoad: String?
+    private var beforeLoad: String?
     private var fromOpen: Bool = false
     private var waitBeforeLoad = false
     
@@ -71,15 +71,15 @@ final class CDVWKInAppBrowser: CDVPlugin {
         }
     }
     
-    @objc(load:)
-    func load(command: CDVInvokedUrlCommand) {
+    @objc(loadAfterBeforeload:)
+    func loadAfterBeforeload(command: CDVInvokedUrlCommand) {
         
         guard let urlStr = command.argument(at: 0) as? String else {
             print("loadAfterBeforeload called with nil argument, ignoring.")
             return
         }
         
-        guard waitBeforeLoad else {
+        guard beforeLoad == "" else {
             print("unexpected loadAfterBeforeload called without feature beforeload=get|post")
             return
         }
@@ -152,16 +152,16 @@ extension CDVWKInAppBrowser {
         let mainDocumentURL = navigationAction.request.mainDocumentURL
         let isTopLevelNavigation = url == mainDocumentURL
         var shouldStart = true
-        let useBeforeLoad = false
-//        let httpMethod = navigationAction.request.httpMethod
-//        var errorMessage: String?
+        var useBeforeLoad = false
+        let httpMethod = navigationAction.request.httpMethod
+        var errorMessage: String?
         
-//        if beforeLoad == "post" {
-//            //TODO handle POST requests by preserving POST data then remove this condition
-//            errorMessage = "beforeload doesn't yet support POST requests"
-//        } else if isTopLevelNavigation && ((beforeLoad == "yes") || ((beforeLoad == "get") && (httpMethod == "GET"))) {
-//            useBeforeLoad = true
-//        }
+        if beforeLoad == "post" {
+            //TODO handle POST requests by preserving POST data then remove this condition
+            errorMessage = "beforeload doesn't yet support POST requests"
+        } else if isTopLevelNavigation && ((beforeLoad == "yes") || ((beforeLoad == "get") && (httpMethod == "GET"))) {
+            useBeforeLoad = true
+        }
         
         // When beforeload, on first URL change, initiate JS callback. Only after the beforeload event, continue.
         if waitBeforeLoad && useBeforeLoad {
@@ -171,10 +171,10 @@ extension CDVWKInAppBrowser {
             return
         }
         
-//        if let errorMessage {
-//            let msg = ["type": "loaderror", "url": url?.absoluteString ?? "", "code": "-1", "message": errorMessage]
-//            failureCallback(msg: msg)
-//        }
+        if let errorMessage {
+            let msg = ["type": "loaderror", "url": url?.absoluteString ?? "", "code": "-1", "message": errorMessage]
+            failureCallback(msg: msg)
+        }
         
         //if is an app store, tel, sms, mailto or geo link, let the system handle it, otherwise it fails to load it
         let allowedSchemes = ["itms-appss", "itms-apps", "tel", "sms", "mailto", "geo"]
@@ -191,9 +191,10 @@ extension CDVWKInAppBrowser {
                 successCallback(msg: msg)
             }
         }
-        fromOpen = false
         
+        fromOpen = false
         waitBeforeLoad = useBeforeLoad
+        
         if shouldStart {
             // Fix GH-417 & GH-424: Handle non-default target attribute
             // Based on https://stackoverflow.com/a/25713070/777265
@@ -384,7 +385,7 @@ extension CDVWKInAppBrowser {
 // MARK: - Utils
 extension CDVWKInAppBrowser {
     override func pluginInitialize() {
-//        beforeLoad = ""
+        beforeLoad = ""
         waitBeforeLoad = false
     }
     
@@ -421,8 +422,10 @@ private extension CDVWKInAppBrowser {
     }
     
     private func open(inAppBrowser url: URL, withOptions options: String) {
-//        let browserOptions = CDVInAppBrowserOptions.parseOptions(options)
-        let browserOptions = CDVInAppBrowserOptions(beforeLoad: true, beforeBlank: false, hidden: false)
+        guard let browserOptions = CDVInAppBrowserOptions(from: options) else {
+            failureCallback()
+            return
+        }
         let dataStore = WKWebsiteDataStore.default()
         let cookieStore = dataStore.httpCookieStore
         
@@ -499,12 +502,11 @@ private extension CDVWKInAppBrowser {
 //        inAppBrowserViewController?.webView.scrollView.bounces = !browserOptions.isOverScrollDisabled
         
         // use of beforeload event
-//        beforeLoad = browserOptions.beforeLoad ?? true
-        waitBeforeLoad = browserOptions.beforeLoad
-//        !(beforeLoad == "")
+        beforeLoad = browserOptions.beforeLoad.rawValue
+        waitBeforeLoad = !(beforeLoad == "")
         
         inAppBrowserViewController?.navigate(to: url)
-        if !browserOptions.hidden {
+        if browserOptions.hidden != .yes {
             fromOpen = true
             show(nil)
         }
