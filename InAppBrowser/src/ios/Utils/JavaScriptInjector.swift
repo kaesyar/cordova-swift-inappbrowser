@@ -32,13 +32,15 @@ extension CDVWKInAppBrowser {
     
     func evaluateJavaScript(_ script: String?) {
         let _script = script
-        inAppBrowserViewController?.webView?.evaluateJavaScript(script ?? "") { result, error in
-            if error == nil {
-                if let result {
-                    print("\(result)")
+        DispatchQueue.main.async { [weak self] in
+            self?.inAppBrowserViewController?.webView?.evaluateJavaScript(script ?? "") { result, error in
+                if error == nil {
+                    if let result {
+                        print("\(result)")
+                    }
+                } else {
+                    print("evaluateJavaScript error : \(error?.localizedDescription ?? "") : \(_script ?? "")")
                 }
-            } else {
-                print("evaluateJavaScript error : \(error?.localizedDescription ?? "") : \(_script ?? "")")
             }
         }
     }

@@ -171,9 +171,9 @@ extension CDVWKInAppBrowserViewController: WKNavigationDelegate {
         // log fail message, stop spinner, update back/forward
         print(String(format: "webView:%@ - %ld: %@", delegateName ?? "", (error as NSError).code, error.localizedDescription))
         
-        backButton?.isEnabled = theWebView.canGoBack
-        forwardButton.isEnabled = theWebView.canGoForward
-        spinner.stopAnimating()
+//        backButton?.isEnabled = theWebView.canGoBack
+//        forwardButton.isEnabled = theWebView.canGoForward
+//        spinner.stopAnimating()
         
 //        addressLabel.text = NSLocalizedString("Load Error", comment: "")
         

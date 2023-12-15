@@ -1,8 +1,9 @@
 @objc(CDVWKInAppBrowser)
-class CDVWKInAppBrowser: CDVPlugin {
+final class CDVWKInAppBrowser: CDVPlugin {
     var tmpWindow: UIWindow?
     
 //    private var beforeLoad: String?
+    private var fromOpen: Bool = false
     private var waitBeforeLoad = false
     
     var inAppBrowserViewController: CDVWKInAppBrowserViewController?
@@ -183,11 +184,14 @@ extension CDVWKInAppBrowser {
             open(inSystem: url)
             shouldStart = false
         } else if !currentCallbackId.isEmpty && isTopLevelNavigation {
-            
-            // Send a loadstart event for each top-level navigation (includes redirects).
-            let msg = ["type": "loadstart", "url": url?.absoluteString ?? ""]
-            successCallback(msg: msg)
+//            print("^", navigationAction.request.)
+            if fromOpen {
+                // Send a loadstart event for each top-level navigation (includes redirects).
+                let msg = ["type": "loadstart", "url": url?.absoluteString ?? ""]
+                successCallback(msg: msg)
+            }
         }
+        fromOpen = false
         
         waitBeforeLoad = useBeforeLoad
         if shouldStart {
@@ -470,7 +474,7 @@ private extension CDVWKInAppBrowser {
 //        }
         
         // Set Presentation Style
-        var presentationStyle: UIModalPresentationStyle = .fullScreen // default
+        let presentationStyle: UIModalPresentationStyle = .fullScreen // default
 //        if browserOptions.presentationStyle != nil {
 //            if browserOptions.presentationStyle?.lowercased() == "pagesheet" {
 //                presentationStyle = .pageSheet
@@ -481,7 +485,7 @@ private extension CDVWKInAppBrowser {
         inAppBrowserViewController?.modalPresentationStyle = presentationStyle
         
         // Set Transition Style
-        var transitionStyle: UIModalTransitionStyle = .coverVertical // default
+        let transitionStyle: UIModalTransitionStyle = .coverVertical // default
 //        if browserOptions.transitionStyle != nil {
 //            if browserOptions.transitionStyle?.lowercased() == "fliphorizontal" {
 //                transitionStyle = .flipHorizontal
@@ -501,6 +505,7 @@ private extension CDVWKInAppBrowser {
         
         inAppBrowserViewController?.navigate(to: url)
         if !browserOptions.hidden {
+            fromOpen = true
             show(nil)
         }
     }
