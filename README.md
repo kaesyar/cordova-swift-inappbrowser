@@ -13,7 +13,7 @@ In order to test and launch follow these steps:
    
     sudo cordova plugin add cordova-plugin-add-swift-support --save
    
-    sudo cordova plugin add ../InAppBrowser
+    sudo cordova plugin add ../cordova-swift-inappbrowser
    
 7. Open the "TestPlugin" folder preferences and give yourself right to read and write in it, also apply it to all enclosed items.
 8. Open HelloCordova.xcworkspace folder in inappbrowser-test/platforms/ios/
