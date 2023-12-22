@@ -261,13 +261,16 @@ extension CDVWKInAppBrowserViewController {
     
     func setupWebView() {
         var webViewBounds = view.bounds
-        webViewBounds.size.height -= CGFloat(browserOptions.bottomOffset)
+        if case .wrappedValue(let bottomOffset) = browserOptions.bottomOffset {
+            webViewBounds.size.height -= CGFloat(bottomOffset)
+        }
+//        webViewBounds.size.height -= CGFloat(browserOptions.bottomOffset. ?? 0)
 //        browserOptions.location ? BrowserConstants.FOOTER_HEIGHT : BrowserConstants.TOOLBAR_HEIGHT
         
         webView = WKWebView(frame: webViewBounds, configuration: configuration)
         
         view.addSubview(webView)
-        view.sendSubviewToBack(webView)
+        view.sendSubview(toBack: webView)
         
         webView.navigationDelegate = self
         webView.uiDelegate = webViewUIDelegate
@@ -290,7 +293,7 @@ extension CDVWKInAppBrowserViewController {
     }
     
     func setupSpinner() {
-        spinner = UIActivityIndicatorView(style: .medium)
+        spinner = UIActivityIndicatorView(activityIndicatorStyle: .medium)
         spinner.alpha = 1.000
         spinner.autoresizesSubviews = true
         spinner.autoresizingMask = [.flexibleLeftMargin, .flexibleTopMargin, .flexibleBottomMargin, .flexibleRightMargin]

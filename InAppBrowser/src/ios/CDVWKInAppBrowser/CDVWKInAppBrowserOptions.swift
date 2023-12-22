@@ -1,10 +1,10 @@
 import Foundation
 
-struct CDVInAppBrowserOptions: Codable {
-    var beforeLoad: BeforeLoadOption = .empty
-    var beforeBlank: BeforeBlankOption = .empty
-    var hidden: HiddenOption = .no
-    var bottomOffset: Int = 0
+struct CDVInAppBrowserOptions: Decodable {
+    var beforeLoad: BeforeLoadOption? = .empty
+    var beforeBlank: BeforeBlankOption? = .empty
+    var hidden: HiddenOption? = .no
+    var bottomOffset: NumericString? = .wrappedValue(0)
     
     enum CodingKeys: String, CodingKey {
         case beforeLoad = "beforeload"
@@ -40,18 +40,34 @@ extension CDVInAppBrowserOptions {
 }
 
 
-enum BeforeLoadOption: String, Codable {
+enum BeforeLoadOption: String, Decodable {
     case yes, no, `get`, post
     case empty = ""
 }
 
-enum BeforeBlankOption: String, Codable {
+enum BeforeBlankOption: String, Decodable {
     case yes, no
     case empty = ""
 }
 
-enum HiddenOption: String, Codable {
+enum HiddenOption: String, Decodable {
     case yes, no
     case empty = ""
+}
+
+enum NumericString: Decodable {
+    case wrappedValue(Int)
+    
+    init(from decoder: Decoder) throws {
+        guard   let stringValue = try? decoder.singleValueContainer().decode(String.self),
+                let wrappedInteger = Int(stringValue) else {
+            throw Error.wrongFormat
+        }
+        self = .wrappedValue(wrappedInteger)
+    }
+    
+    enum Error: Swift.Error {
+        case wrongFormat
+    }
 }
 
