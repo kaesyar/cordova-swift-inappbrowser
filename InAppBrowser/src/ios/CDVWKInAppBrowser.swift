@@ -8,7 +8,7 @@ final class CDVWKInAppBrowser: CDVPlugin {
     
     var inAppBrowserViewController: CDVWKInAppBrowserViewController?
     var currentCallbackId = String()
-    
+    //
     @objc(open:)
     func open(_ command: CDVInvokedUrlCommand) {
         currentCallbackId = command.callbackId
@@ -477,7 +477,7 @@ private extension CDVWKInAppBrowser {
 //        }
         
         // Set Presentation Style
-        let presentationStyle: UIModalPresentationStyle = .fullScreen // default
+        let presentationStyle: UIModalPresentationStyle = .overFullScreen // transparent bottom
 //        if browserOptions.presentationStyle != nil {
 //            if browserOptions.presentationStyle?.lowercased() == "pagesheet" {
 //                presentationStyle = .pageSheet
@@ -502,7 +502,7 @@ private extension CDVWKInAppBrowser {
 //        inAppBrowserViewController?.webView.scrollView.bounces = !browserOptions.isOverScrollDisabled
         
         // use of beforeload event
-        beforeLoad = browserOptions.beforeLoad.rawValue
+        beforeLoad = browserOptions.beforeLoad?.rawValue ?? ""
         waitBeforeLoad = !(beforeLoad == "")
         
         inAppBrowserViewController?.navigate(to: url)
